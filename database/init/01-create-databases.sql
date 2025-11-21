@@ -1,0 +1,3 @@
+CREATE DATABASE user_db;
+CREATE DATABASE group_db;
+CREATE DATABASE document_db;
