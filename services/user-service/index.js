@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
-import pool from "./config/database.js";
+import pool from "./src/config/db.js";
 import express from "express";
 import morgan from "morgan";
-import usersRouter from "./routes/users-routes.js"
+import usersRouter from "./src/routes/users-routes.js"
 
 const app = express();
 
