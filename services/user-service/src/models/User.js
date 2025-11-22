@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import bcrypt from "bcrypt"
 
 class User {
     static async createUser(userData) {
@@ -7,9 +8,10 @@ class User {
             values ($1, $2, $3, $4, $5)
             RETURNING *
         `;
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
         const result = await pool.query(query, [
             userData.email,
-            userData.hashedPassword,
+            hashedPassword,
             userData.displayName,
             userData.firstName,
             userData.lastName
