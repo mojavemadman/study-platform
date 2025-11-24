@@ -1,5 +1,4 @@
 import pool from "../config/db.js";
-import bcrypt from "bcrypt"
 
 class User {
     static async createUser(userData) {
@@ -8,10 +7,9 @@ class User {
             VALUES ($1, $2, $3, $4, $5)
             RETURNING *
         `;
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
         const result = await pool.query(query, [
             userData.email,
-            hashedPassword,
+            userData.password,
             userData.displayName,
             userData.firstName,
             userData.lastName
@@ -25,6 +23,12 @@ class User {
         return result.rows[0];
     }
 
+    static async findUserById(userId) {
+        const query = `SELECT * FROM users WHERE id = $1`;
+        const result = await pool.query(query, [userId]);
+        return result.rows[0];
+    }
+
     static async updateLastLogin(userId) {
         const query = `
             UPDATE users
@@ -32,6 +36,35 @@ class User {
             WHERE id = $1
             RETURNING *
         `;
+        const result = await pool.query(query, [userId]);
+        return result.rows[0];
+    }
+
+    static async updateUserProfile(updates, userId) {
+        const query = `
+            UPDATE users
+            SET
+                email = COALESCE($1, email),
+                password = COALESCE($2, password),
+                display_name = COALESCE($3, display_name),
+                first_name = COALESCE($4, first_name),
+                last_name = COALESCE($5, last_name)
+            WHERE id = $6
+            RETURNING *
+        `;
+        const result = await pool.query(query, [
+            updates.email,
+            updates.password,
+            updates.displayName,
+            updates.firstName,
+            updates.lastName,
+            userId
+        ]);
+        return result.rows[0];
+    }
+
+    static async deleteUser(userId) {
+        const query = `DELETE FROM users WHERE id =$1 RETURNING *`;
         const result = await pool.query(query, [userId]);
         return result.rows[0];
     }
